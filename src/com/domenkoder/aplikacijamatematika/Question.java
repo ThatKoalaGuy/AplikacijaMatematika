@@ -4,19 +4,102 @@
  */
 package com.domenkoder.aplikacijamatematika;
 
+import java.util.List;
+import java.util.Random;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author domen
  */
 public class Question extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Question.class.getName());
+    
+    private List<String> operations;
+    private Random random = new Random();
+
+    private int a, b;
+    private int wrongCount = 0, correctCount = 0;
+    private String operator;
+    private int correctResult;
+    
+    private void generateTask() {
+
+        operator = operations.get(random.nextInt(operations.size()));
+
+        a = random.nextInt(10) + 1;
+        b = random.nextInt(10) + 1;
+
+        switch (operator) {
+            case "+":
+                correctResult = a + b;
+                break;
+
+            case "-":
+                if (b > a) { int t = a; a = b; b = t; }
+                correctResult = a - b;
+                break;
+
+            case "*":
+                correctResult = a * b;
+                break;
+
+            case "/":
+                b = random.nextInt(9) + 1;
+                correctResult = random.nextInt(10) + 1;
+                a = b * correctResult;
+                break;
+        }
+
+        jLabel1.setText(a + " " + operator + " " + b + " = ");
+    }
+
+    private void checkButtonActionPerformed(java.awt.event.ActionEvent evt) {
+
+    String input = jTextField1.getText().trim();
+
+    if (input.isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+                "Vpiši odgovor!",
+                "Opozorilo",
+                JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int userAnswer;
+
+    try {
+        userAnswer = Integer.parseInt(input);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this,
+                "Vnesi število!",
+                "Napaka",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (userAnswer == correctResult) {
+        JOptionPane.showMessageDialog(rootPane, "✅ Pravilno!");
+        correctCount++;
+    } else {
+        JOptionPane.showMessageDialog(rootPane, "❌ Napačno! Pravilen rezultat je: " + correctResult);
+        wrongCount++;
+    }
+
+    generateTask();          // nov račun
+    jTextField1.setText(""); // počisti vnos
+}
+
+
 
     /**
      * Creates new form Question
      */
-    public Question() {
+    public Question(List<String> operations) {
         initComponents();
+        this.operations = operations;
+        generateTask();
     }
 
     /**
@@ -28,47 +111,88 @@ public class Question extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
+        jLabel2.setText("IZRAČUNAJ!");
+
+        jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
+
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
+        jButton1.setText("POTRDI");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(155, 155, 155)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(74, 74, 74)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(227, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(459, 459, 459))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(71, 71, 71))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(109, 109, 109)
+                .addComponent(jLabel2)
+                .addGap(145, 145, 145)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(71, 71, 71))
         );
 
-        pack();
+        setSize(new java.awt.Dimension(1216, 809));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        checkButtonActionPerformed(evt);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        
+    }//GEN-LAST:event_jButton1MouseClicked
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Question().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

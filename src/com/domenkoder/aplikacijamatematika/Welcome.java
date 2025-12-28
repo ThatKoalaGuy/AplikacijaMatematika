@@ -5,6 +5,8 @@
 package com.domenkoder.aplikacijamatematika;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import java.util.List;
+import java.util.ArrayList;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -128,24 +130,39 @@ public class Welcome extends javax.swing.JFrame {
         );
 
         if (result == JOptionPane.OK_OPTION) {
+            List<String> operations = new ArrayList<>();
+
             if (cbAdd.isSelected()) {
-                System.out.println("+");
+                operations.add("+");
             }
             if (cbSub.isSelected()) {
-                System.out.println("-");
+                operations.add("-");
             }
             if (cbMul.isSelected()) {
-                System.out.println("*");
+                operations.add("*");
             }
             if (cbDiv.isSelected()) {
-                System.out.println("/");
+                operations.add("/");
             }
-        }
 
+            // varnostni check (zelo pomembno)
+            if (operations.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Izbrati moraš vsaj eno operacijo!",
+                        "Napaka",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                return;
+            }
+            new Question(operations).setVisible(true);
+            this.dispose();
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenu3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu3ActionPerformed
-        
+
     }//GEN-LAST:event_jMenu3ActionPerformed
 
     private void jMenu3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu3MouseClicked
