@@ -15,41 +15,68 @@ import javax.swing.JOptionPane;
 public class Question extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Question.class.getName());
-    
-    private List<String> operations;
-    private Random random = new Random();
+
+    private final List<String> operations;
+    private final Random random = new Random();
+
+    private int questionCount = 0;
+    private static final int MAX_QUESTIONS = 20;
 
     private int a, b;
     private int wrongCount = 0, correctCount = 0;
     private String operator;
     private int correctResult;
-    
+
+    private int[] correctPerLevel = new int[3]; // index 0 = level 1
+    private int[] wrongPerLevel = new int[3];
+    private int[] totalPerLevel = new int[3];
+
+    private int level = 1;          // 1 = lahko, 2 = srednje, 3 = težko
+    private int streakCorrect = 0;
+    private int streakWrong = 0;
+
+    private int getMaxResultForLevel() {
+        return switch (level) {
+            case 1 ->
+                20;
+            case 2 ->
+                50;
+            default ->
+                100;
+        };
+    }
+
     private void generateTask() {
-
         operator = operations.get(random.nextInt(operations.size()));
-
-        a = random.nextInt(10) + 1;
-        b = random.nextInt(10) + 1;
+        int maxResult = getMaxResultForLevel();
 
         switch (operator) {
-            case "+":
-                correctResult = a + b;
-                break;
 
-            case "-":
-                if (b > a) { int t = a; a = b; b = t; }
+            case "+" -> {
+                correctResult = random.nextInt(maxResult + 1);
+                a = random.nextInt(correctResult + 1);
+                b = correctResult - a;
+            }
+
+            case "-" -> {
+                a = random.nextInt(maxResult + 1);
+                b = random.nextInt(a + 1); //Da rezultat ne gre v minus
                 correctResult = a - b;
-                break;
+            }
 
-            case "*":
+            case "*" -> {
+                //Faktorji so omejeni da rezultat ne postane prevelik
+                a = random.nextInt(level + 4) + 1;
+                b = random.nextInt(maxResult / a + 1);
                 correctResult = a * b;
-                break;
+            }
 
-            case "/":
-                b = random.nextInt(9) + 1;
-                correctResult = random.nextInt(10) + 1;
-                a = b * correctResult;
-                break;
+            case "/" -> {
+                //Deljenje brez ostanja
+                b = random.nextInt(level + 4) + 1;
+                correctResult = random.nextInt(maxResult / b + 1);
+                a = correctResult * b;
+            }
         }
 
         jLabel1.setText(a + " " + operator + " " + b + " = ");
@@ -57,41 +84,76 @@ public class Question extends javax.swing.JFrame {
 
     private void checkButtonActionPerformed(java.awt.event.ActionEvent evt) {
 
-    String input = jTextField1.getText().trim();
+        String input = jTextField1.getText().trim();
 
-    if (input.isEmpty()) {
-        JOptionPane.showMessageDialog(this,
-                "Vpiši odgovor!",
-                "Opozorilo",
-                JOptionPane.WARNING_MESSAGE);
-        return;
+        int idx = level - 1;
+        totalPerLevel[idx]++;
+
+        if (input.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Vpiši odgovor!",
+                    "Opozorilo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int userAnswer;
+
+        try {
+            userAnswer = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Vnesi število!",
+                    "Napaka",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (userAnswer == correctResult) {
+            JOptionPane.showMessageDialog(rootPane, "✅ Pravilno!");
+            correctCount++;
+
+            streakCorrect++;
+            streakWrong = 0;
+
+            //za statistiko
+            correctPerLevel[idx]++;
+
+            if (streakCorrect == 3 && level < 3) {
+                level++;
+                streakCorrect = 0;
+            }
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "❌ Napačno! Pravilen rezultat je: " + correctResult);
+            wrongCount++;
+
+            streakWrong++;
+            streakCorrect = 0;
+
+            //za statistiko
+            wrongPerLevel[idx]++;
+
+            if (streakWrong == 2 && level > 1) {
+                level--;
+                streakWrong = 0;
+            }
+        }
+
+        questionCount++;
+
+        if (questionCount >= MAX_QUESTIONS) {
+            new Statistics(
+                    correctPerLevel,
+                    wrongPerLevel,
+                    totalPerLevel).setVisible(true);
+
+            this.dispose();
+            return;
+        }
+
+        generateTask();
+        jTextField1.setText("");
     }
-
-    int userAnswer;
-
-    try {
-        userAnswer = Integer.parseInt(input);
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this,
-                "Vnesi število!",
-                "Napaka",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    if (userAnswer == correctResult) {
-        JOptionPane.showMessageDialog(rootPane, "✅ Pravilno!");
-        correctCount++;
-    } else {
-        JOptionPane.showMessageDialog(rootPane, "❌ Napačno! Pravilen rezultat je: " + correctResult);
-        wrongCount++;
-    }
-
-    generateTask();          // nov račun
-    jTextField1.setText(""); // počisti vnos
-}
-
-
 
     /**
      * Creates new form Question
@@ -115,8 +177,13 @@ public class Question extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Seštevko | IZRAČUNAJ!");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
 
@@ -138,14 +205,45 @@ public class Question extends javax.swing.JFrame {
             }
         });
 
+        jMenu1.setText("Navodila");
+        jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu1MouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Vizitka");
+        jMenu2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu2MouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Izhod");
+        jMenu3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu3MouseClicked(evt);
+            }
+        });
+        jMenu3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu3ActionPerformed(evt);
+            }
+        });
+        jMenuBar1.add(jMenu3);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(155, 155, 155)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(74, 74, 74)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(227, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -167,7 +265,7 @@ public class Question extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(71, 71, 71))
         );
@@ -177,22 +275,40 @@ public class Question extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
         checkButtonActionPerformed(evt);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        
+
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu1MouseClicked
+        new Navodila().setVisible(true);
+    }//GEN-LAST:event_jMenu1MouseClicked
+
+    private void jMenu2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu2MouseClicked
+        JOptionPane.showMessageDialog(rootPane, "Seštevko v1.0 \n © Domen Koder, 2025 \nLicencirano pod MIT licenco.");
+    }//GEN-LAST:event_jMenu2MouseClicked
+
+    private void jMenu3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu3MouseClicked
+        System.exit(0);
+    }//GEN-LAST:event_jMenu3MouseClicked
+
+    private void jMenu3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu3ActionPerformed
+
+    }//GEN-LAST:event_jMenu3ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
