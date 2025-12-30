@@ -160,6 +160,7 @@ public class Question extends javax.swing.JFrame {
      */
     public Question(List<String> operations) {
         initComponents();
+        getRootPane().setDefaultButton(jButton1);
         this.operations = operations;
         generateTask();
     }
@@ -191,6 +192,11 @@ public class Question extends javax.swing.JFrame {
         jLabel2.setText("IZRAČUNAJ!");
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField1KeyPressed(evt);
+            }
+        });
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jButton1.setText("POTRDI");
@@ -297,6 +303,10 @@ public class Question extends javax.swing.JFrame {
     private void jMenu3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu3ActionPerformed
 
     }//GEN-LAST:event_jMenu3ActionPerformed
+
+    private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
+        
+    }//GEN-LAST:event_jTextField1KeyPressed
 
     /**
      * @param args the command line arguments
