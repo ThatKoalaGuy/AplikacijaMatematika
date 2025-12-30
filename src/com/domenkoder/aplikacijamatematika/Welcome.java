@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -154,6 +155,7 @@ public class Welcome extends javax.swing.JFrame {
                         JOptionPane.ERROR_MESSAGE
                 );
 
+                jButton1ActionPerformed(evt);
                 return;
             }
             new Question(operations).setVisible(true);
@@ -201,7 +203,7 @@ public class Welcome extends javax.swing.JFrame {
 
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
-        } catch (Exception e) {
+        } catch (UnsupportedLookAndFeelException e) {
             System.err.println("Failed to initialize FlatLaf Dark theme.");
         }
 

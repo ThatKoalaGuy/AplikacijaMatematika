@@ -7,6 +7,7 @@ package com.domenkoder.aplikacijamatematika;
 import java.util.List;
 import java.util.Random;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 /**
  *
@@ -19,6 +20,9 @@ public class Question extends javax.swing.JFrame {
     private final List<String> operations;
     private final Random random = new Random();
 
+    private Timer questionTimer;
+    private int timeLeft = 15; // sekunde na vprašanje
+
     private int questionCount = 0;
     private static final int MAX_QUESTIONS = 20;
 
@@ -27,9 +31,9 @@ public class Question extends javax.swing.JFrame {
     private String operator;
     private int correctResult;
 
-    private int[] correctPerLevel = new int[3]; // index 0 = level 1
-    private int[] wrongPerLevel = new int[3];
-    private int[] totalPerLevel = new int[3];
+    private final int[] correctPerLevel = new int[3]; // index 0 = level 1
+    private final int[] wrongPerLevel = new int[3];
+    private final int[] totalPerLevel = new int[3];
 
     private int level = 1;          // 1 = lahko, 2 = srednje, 3 = težko
     private int streakCorrect = 0;
@@ -37,13 +41,74 @@ public class Question extends javax.swing.JFrame {
 
     /**
      * Creates new form Question
+     *
+     * @param operations
      */
     public Question(List<String> operations) {
         initComponents();
         jTextField1.requestFocusInWindow();
+        jLabel3.setText("Čas: 15");
         getRootPane().setDefaultButton(jButton1);
         this.operations = operations;
+
         generateTask();
+        startTimer();
+
+    }
+
+    private void startTimer() {
+        timeLeft = 15;
+        jLabel3.setText("Čas: " + timeLeft);
+
+        if (questionTimer != null && questionTimer.isRunning()) {
+            questionTimer.stop();
+        }
+
+        questionTimer = new Timer(1000, e -> {
+            timeLeft--;
+            jLabel3.setText("Čas: " + timeLeft);
+
+            if (timeLeft <= 0) {
+                questionTimer.stop();
+                handleTimeout();
+            }
+        });
+
+        questionTimer.start();
+    }
+
+    private void handleTimeout() {
+        JOptionPane.showMessageDialog(this,
+                "⏰ Čas je potekel!\nPravilen rezultat je: " + correctResult);
+
+        wrongCount++;
+        wrongPerLevel[level - 1]++;
+        totalPerLevel[level - 1]++;
+        streakWrong++;
+        streakCorrect = 0;
+
+        if (streakWrong == 2 && level > 1) {
+            level--;
+            streakWrong = 0;
+        }
+
+        nextQuestion();
+    }
+
+    private void nextQuestion() {
+        questionCount++;
+
+        if (questionCount >= MAX_QUESTIONS) {
+            new Statistics(correctPerLevel, wrongPerLevel, totalPerLevel)
+                    .setVisible(true);
+            dispose();
+            return;
+        }
+
+        generateTask();
+        jTextField1.setText("");
+        jTextField1.requestFocus();
+        startTimer();
     }
 
     private int getMaxResultForLevel() {
@@ -121,6 +186,7 @@ public class Question extends javax.swing.JFrame {
         }
 
         if (userAnswer == correctResult) {
+            questionTimer.stop();
             JOptionPane.showMessageDialog(rootPane, "✅ Pravilno!");
             correctCount++;
 
@@ -135,6 +201,7 @@ public class Question extends javax.swing.JFrame {
                 streakCorrect = 0;
             }
         } else {
+            questionTimer.stop();
             JOptionPane.showMessageDialog(rootPane, "❌ Napačno! Pravilen rezultat je: " + correctResult);
             wrongCount++;
 
@@ -150,8 +217,6 @@ public class Question extends javax.swing.JFrame {
             }
         }
 
-        questionCount++;
-
         if (questionCount >= MAX_QUESTIONS) {
             new Statistics(
                     correctPerLevel,
@@ -162,8 +227,9 @@ public class Question extends javax.swing.JFrame {
             return;
         }
 
-        generateTask();
-        jTextField1.setText("");
+        questionTimer.stop();
+        nextQuestion();
+
     }
 
     /**
@@ -179,6 +245,7 @@ public class Question extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -186,11 +253,14 @@ public class Question extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Seštevko | IZRAČUNAJ!");
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(155, 318, 519, 152));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
         jLabel2.setText("IZRAČUNAJ!");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 109, -1, -1));
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -198,6 +268,7 @@ public class Question extends javax.swing.JFrame {
                 jTextField1KeyPressed(evt);
             }
         });
+        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(686, 318, 287, 152));
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jButton1.setText("POTRDI");
@@ -211,6 +282,11 @@ public class Question extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(879, 556, 250, 150));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
+        jLabel3.setText("jLabel3");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 170, -1, -1));
 
         jMenu1.setText("Navodila");
         jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -242,40 +318,6 @@ public class Question extends javax.swing.JFrame {
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(155, 155, 155)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(227, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(459, 459, 459))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(71, 71, 71))))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(109, 109, 109)
-                .addComponent(jLabel2)
-                .addGap(145, 145, 145)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(71, 71, 71))
-        );
 
         setSize(new java.awt.Dimension(1216, 809));
         setLocationRelativeTo(null);
@@ -316,6 +358,7 @@ public class Question extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
