@@ -73,21 +73,20 @@ public class Statistics extends javax.swing.JFrame {
                 + "Ocena: " + calculateGrade(percent) + " </html>"
         );
     }
-    
-    private String calculateGrade(int percent) {
-    if (percent <= 44) {
-        return "Nezadostno (1)";
-    } else if (percent <= 64) {
-        return "Zadostno (2)";
-    } else if (percent <= 80) {
-        return "Dobro (3)";
-    } else if (percent <= 90) {
-        return "Prav dobro (4)";
-    } else {
-        return "Odlično (5)";
-    }
-}
 
+    private String calculateGrade(int percent) {
+        if (percent <= 44) {
+            return "Nezadostno (1)";
+        } else if (percent <= 64) {
+            return "Zadostno (2)";
+        } else if (percent <= 80) {
+            return "Dobro (3)";
+        } else if (percent <= 90) {
+            return "Prav dobro (4)";
+        } else {
+            return "Odlično (5)";
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

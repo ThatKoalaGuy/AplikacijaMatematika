@@ -35,6 +35,17 @@ public class Question extends javax.swing.JFrame {
     private int streakCorrect = 0;
     private int streakWrong = 0;
 
+    /**
+     * Creates new form Question
+     */
+    public Question(List<String> operations) {
+        initComponents();
+        jTextField1.requestFocusInWindow();
+        getRootPane().setDefaultButton(jButton1);
+        this.operations = operations;
+        generateTask();
+    }
+
     private int getMaxResultForLevel() {
         return switch (level) {
             case 1 ->
@@ -153,16 +164,6 @@ public class Question extends javax.swing.JFrame {
 
         generateTask();
         jTextField1.setText("");
-    }
-
-    /**
-     * Creates new form Question
-     */
-    public Question(List<String> operations) {
-        initComponents();
-        getRootPane().setDefaultButton(jButton1);
-        this.operations = operations;
-        generateTask();
     }
 
     /**
@@ -305,7 +306,7 @@ public class Question extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenu3ActionPerformed
 
     private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
-        
+
     }//GEN-LAST:event_jTextField1KeyPressed
 
     /**
