@@ -39,6 +39,11 @@ public class Question extends javax.swing.JFrame {
     private int streakCorrect = 0;
     private int streakWrong = 0;
 
+    private final int TOM_START_X = 30;
+    private final int TOM_Y = 530;
+
+    private int tomX = TOM_START_X;
+
     /**
      * Creates new form Question
      *
@@ -153,9 +158,46 @@ public class Question extends javax.swing.JFrame {
                 correctResult = random.nextInt(maxResult / b + 1);
                 a = correctResult * b;
             }
+
+            case "^" -> {
+                int result;
+
+                do {
+                    a = random.nextInt(9) + 2;   // baza 2–10
+                    b = random.nextInt(3) + 2;   // eksponent 2–4
+                    result = (int) Math.pow(a, b);
+                } while (result > 225);
+
+                correctResult = result;
+            }
+
+            case "√" -> {
+                // dovoljeni rezultati: 1–15 (15² = 225)
+                correctResult = random.nextInt(15) + 1;
+                a = correctResult * correctResult; // število pod korenom
+            }
+
+            case "!" -> {
+                a = random.nextInt(6) + 1; // 1–6 (anything higher is stupidity)
+                b = 0;
+
+                int fact = 1;
+                for (int i = 2; i <= a; i++) {
+                    fact *= i;
+                }
+
+                correctResult = fact;
+            }
         }
 
-        jLabel1.setText(a + " " + operator + " " + b + " = ");
+        switch (operator) {
+            case "√" ->
+                jLabel1.setText("√" + a + " = ");
+            case "!" ->
+                jLabel1.setText(a + "! = ");
+            default ->
+                jLabel1.setText(a + " " + operator + " " + b + " = ");
+        }
     }
 
     private void checkButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -187,6 +229,15 @@ public class Question extends javax.swing.JFrame {
 
         if (userAnswer == correctResult) {
             questionTimer.stop();
+
+            //TOM
+            if (jLabelTom.getX() > TOM_START_X) {
+                jLabelTom.setLocation(
+                        jLabelTom.getX() - 25,
+                        jLabelTom.getY()
+                );
+            }
+
             JOptionPane.showMessageDialog(rootPane, "✅ Pravilno!");
             correctCount++;
 
@@ -202,6 +253,10 @@ public class Question extends javax.swing.JFrame {
             }
         } else {
             questionTimer.stop();
+            jLabelTom.setLocation(
+                    jLabelTom.getX() + 25,
+                    jLabelTom.getY()
+            );
             JOptionPane.showMessageDialog(rootPane, "❌ Napačno! Pravilen rezultat je: " + correctResult);
             wrongCount++;
 
@@ -246,6 +301,8 @@ public class Question extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        jLabelTom = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -253,14 +310,16 @@ public class Question extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Seštevko | IZRAČUNAJ!");
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(155, 318, 519, 152));
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(155, 318, 519, 152);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
         jLabel2.setText("IZRAČUNAJ!");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 109, -1, -1));
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(480, 109, 261, 64);
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -268,7 +327,8 @@ public class Question extends javax.swing.JFrame {
                 jTextField1KeyPressed(evt);
             }
         });
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(686, 318, 287, 152));
+        getContentPane().add(jTextField1);
+        jTextField1.setBounds(686, 318, 287, 152);
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jButton1.setText("POTRDI");
@@ -282,11 +342,21 @@ public class Question extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(879, 556, 250, 150));
+        getContentPane().add(jButton1);
+        jButton1.setBounds(879, 556, 250, 150);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
         jLabel3.setText("jLabel3");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 170, -1, -1));
+        getContentPane().add(jLabel3);
+        jLabel3.setBounds(920, 170, 150, 64);
+
+        jLabelTom.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/domenkoder/aplikacijamatematika/images/Tom_Cat.png"))); // NOI18N
+        getContentPane().add(jLabelTom);
+        jLabelTom.setBounds(30, 530, 200, 222);
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/domenkoder/aplikacijamatematika/images/Jerry_Mouse.png"))); // NOI18N
+        getContentPane().add(jLabel5);
+        jLabel5.setBounds(780, 690, 50, 66);
 
         jMenu1.setText("Navodila");
         jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -359,6 +429,8 @@ public class Question extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabelTom;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;

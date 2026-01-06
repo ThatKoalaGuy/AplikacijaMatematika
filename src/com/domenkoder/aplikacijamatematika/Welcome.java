@@ -113,13 +113,19 @@ public class Welcome extends javax.swing.JFrame {
         JCheckBox cbSub = new JCheckBox("Odštevanje");
         JCheckBox cbMul = new JCheckBox("Množenje");
         JCheckBox cbDiv = new JCheckBox("Deljenje");
+        JCheckBox cbPow = new JCheckBox("Potence");
+        JCheckBox cbRoot = new JCheckBox("Koreni");
+        JCheckBox cbFactorial = new JCheckBox("Fakulteta");
 
         Object[] message = {
             "Izberi operacije:",
             cbAdd,
             cbSub,
             cbMul,
-            cbDiv
+            cbDiv,
+            cbPow,
+            cbRoot,
+            cbFactorial
         };
 
         int result = JOptionPane.showConfirmDialog(
@@ -144,6 +150,15 @@ public class Welcome extends javax.swing.JFrame {
             }
             if (cbDiv.isSelected()) {
                 operations.add("/");
+            }
+            if (cbPow.isSelected()) {
+                operations.add("^");
+            }
+            if (cbRoot.isSelected()) {
+                operations.add("√");
+            }
+            if (cbFactorial.isSelected()) {
+                operations.add("!");
             }
 
             // varnostni check (zelo pomembno)
