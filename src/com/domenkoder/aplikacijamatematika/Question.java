@@ -303,6 +303,7 @@ public class Question extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabelTom = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -313,10 +314,12 @@ public class Question extends javax.swing.JFrame {
         getContentPane().setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 100)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 0, 0));
         getContentPane().add(jLabel1);
         jLabel1.setBounds(155, 318, 519, 152);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("IZRAČUNAJ!");
         getContentPane().add(jLabel2);
         jLabel2.setBounds(480, 109, 261, 64);
@@ -346,6 +349,7 @@ public class Question extends javax.swing.JFrame {
         jButton1.setBounds(879, 556, 250, 150);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("jLabel3");
         getContentPane().add(jLabel3);
         jLabel3.setBounds(920, 170, 150, 64);
@@ -357,6 +361,10 @@ public class Question extends javax.swing.JFrame {
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/domenkoder/aplikacijamatematika/images/Jerry_Mouse.png"))); // NOI18N
         getContentPane().add(jLabel5);
         jLabel5.setBounds(780, 690, 50, 66);
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/domenkoder/aplikacijamatematika/images/background.png"))); // NOI18N
+        getContentPane().add(jLabel4);
+        jLabel4.setBounds(0, -20, 1200, 800);
 
         jMenu1.setText("Navodila");
         jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -429,6 +437,7 @@ public class Question extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelTom;
     private javax.swing.JMenu jMenu1;
